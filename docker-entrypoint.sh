@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🤖 Starting Bratislava Weather Bot..."
+echo "🌍 Starting Multi-City Weather Bot v2.0..."
 
 # In Caprover, environment variables are set directly in the dashboard
 # Only create .env if we're running locally and it doesn't exist
@@ -45,12 +45,16 @@ echo "0 * * * * cd /app && python main.py --mode multi-city >> logs/multi_city_c
 # Install cron jobs
 crontab /tmp/crontab
 
+echo "📋 Installed cron job:"
+cat /tmp/crontab
+
 # Create initial log entry
-echo "$(date): Multi-City Weather Bot started" >> logs/multi_city_cron.log
+echo "$(date): Multi-City Weather Bot v2.0 started - All cities enabled" >> logs/multi_city_cron.log
 
 echo "✅ Hourly updates scheduled:"
-echo "   - All cities (Bratislava, Nairobi, Kisumu): Every hour at minute 0"
+echo "   - Multi-city mode: All cities (Bratislava, Nairobi, Kisumu) at minute 0"
 echo "   - Built-in 5-second delays between cities to avoid rate limits"
+echo "   - Logs: Check logs/multi_city_cron.log for cron job output"
 
 # Start health check server in background
 echo "🏥 Starting health check server..."
