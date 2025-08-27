@@ -13,8 +13,17 @@ import time
 from weather_service import WeatherService
 from twitter_service import TwitterService
 from message_formatter import MessageFormatter
-from multi_city_bot import MultiCityWeatherBot
 from logger import logger
+
+# Try to import multi-city functionality, fallback gracefully if not available
+try:
+    from multi_city_bot import MultiCityWeatherBot
+
+    MULTI_CITY_AVAILABLE = True
+except ImportError as e:
+    logger.warning("Multi-city functionality not available: %s", e)
+    MultiCityWeatherBot = None
+    MULTI_CITY_AVAILABLE = False
 
 
 class BratislavaWeatherBot:
@@ -231,12 +240,35 @@ def main():
     try:
         if args.mode == "multi-city":
             # Multi-city mode - post weather for all configured cities
+            if not MULTI_CITY_AVAILABLE:
+                logger.error(
+                    "Multi-city mode not available. Falling back to single-city mode."
+                )
+                bot = BratislavaWeatherBot()
+                success = bot.post_current_weather()
+                sys.exit(0 if success else 1)
+
             multi_bot = MultiCityWeatherBot()
             multi_bot.post_current_weather_all_cities()
             sys.exit(0)
 
         elif args.mode == "city" and args.city:
             # Single city mode with specified city
+            if not MULTI_CITY_AVAILABLE:
+                if args.city.lower() == "bratislava":
+                    logger.warning(
+                        "Multi-city not available. Using single-city bot for Bratislava."
+                    )
+                    bot = BratislavaWeatherBot()
+                    success = bot.post_current_weather()
+                    sys.exit(0 if success else 1)
+                else:
+                    logger.error(
+                        "Multi-city functionality required for %s but not available.",
+                        args.city,
+                    )
+                    sys.exit(1)
+
             multi_bot = MultiCityWeatherBot()
             success = multi_bot.post_current_weather_city(args.city)
             sys.exit(0 if success else 1)
@@ -244,6 +276,27 @@ def main():
         elif args.mode == "test":
             if args.city:
                 # Test specific city
+                if not MULTI_CITY_AVAILABLE:
+                    if args.city.lower() == "bratislava":
+                        logger.warning(
+                            "Multi-city not available. Testing single-city bot for Bratislava."
+                        )
+                        bot = BratislavaWeatherBot()
+                        weather = bot.weather_service.get_current_weather()
+                        if weather:
+                            logger.info(
+                                "✅ Test completed for Bratislava: %s°C, %s",
+                                weather["temperature"],
+                                weather["description"],
+                            )
+                        sys.exit(0 if weather else 1)
+                    else:
+                        logger.error(
+                            "❌ Multi-city functionality required for %s but not available.",
+                            args.city,
+                        )
+                        sys.exit(1)
+
                 multi_bot = MultiCityWeatherBot()
                 if args.city in multi_bot.get_available_cities():
                     success = multi_bot.post_current_weather_city(args.city)
@@ -258,6 +311,30 @@ def main():
                     sys.exit(1)
             else:
                 # Test all cities
+                if not MULTI_CITY_AVAILABLE:
+                    logger.warning(
+                        "Multi-city not available. Testing single-city bot only."
+                    )
+                    bot = BratislavaWeatherBot()
+                    weather = bot.weather_service.get_current_weather()
+                    if weather:
+                        logger.info("✅ Single-city weather service working")
+                    else:
+                        logger.error("❌ Single-city weather service failed")
+                        sys.exit(1)
+
+                    account_info = bot.twitter_service.get_account_info()
+                    if account_info:
+                        logger.info(
+                            "✅ Twitter service working - @%s", account_info["username"]
+                        )
+                    else:
+                        logger.error("❌ Twitter service failed")
+                        sys.exit(1)
+
+                    logger.info("✅ All available tests passed!")
+                    sys.exit(0)
+
                 multi_bot = MultiCityWeatherBot()
                 multi_bot.test_all_cities()
 
