@@ -36,8 +36,26 @@ python main.py --mode test || {
 echo "🕐 Starting cron daemon..."
 service cron start
 
-# Create initial log entry
-echo "$(date): Bratislava Weather Bot started" >> logs/cron.log
+# Setup multi-city cron jobs for hourly updates
+echo "⚙️ Setting up hourly weather updates..."
+
+# Create cron entries for each city at staggered times
+echo "0 * * * * cd /app && python main.py --mode city --city Bratislava >> logs/bratislava_cron.log 2>&1" >> /tmp/crontab
+echo "5 * * * * cd /app && python main.py --mode city --city Nairobi >> logs/nairobi_cron.log 2>&1" >> /tmp/crontab
+echo "10 * * * * cd /app && python main.py --mode city --city Kisumu >> logs/kisumu_cron.log 2>&1" >> /tmp/crontab
+
+# Install cron jobs
+crontab /tmp/crontab
+
+# Create initial log entries
+echo "$(date): Multi-City Weather Bot started" >> logs/bratislava_cron.log
+echo "$(date): Multi-City Weather Bot started" >> logs/nairobi_cron.log  
+echo "$(date): Multi-City Weather Bot started" >> logs/kisumu_cron.log
+
+echo "✅ Hourly updates scheduled:"
+echo "   - Bratislava: Every hour at minute 0"
+echo "   - Nairobi: Every hour at minute 5"
+echo "   - Kisumu: Every hour at minute 10"
 
 # Start health check server in background
 echo "🏥 Starting health check server..."

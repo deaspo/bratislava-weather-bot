@@ -6,13 +6,30 @@ from logger import logger
 
 
 class WeatherService:
-    def __init__(self):
+    def __init__(self, city_config=None):
+        """
+        Initialize weather service for a specific city
+        Args:
+            city_config: Dictionary containing city info (name, lat, lon, timezone, etc.)
+                        If None, uses default config values for backward compatibility
+        """
         self.api_key = config.OPENWEATHER_API_KEY
         self.base_url = config.OPENWEATHER_BASE_URL
         self.onecall_url = config.OPENWEATHER_ONECALL_URL
-        self.lat = config.LATITUDE
-        self.lon = config.LONGITUDE
-        self.city_name = config.CITY_NAME
+        
+        if city_config:
+            self.lat = city_config["latitude"]
+            self.lon = city_config["longitude"]
+            self.city_name = city_config["name"]
+            self.country_code = city_config["country_code"]
+            self.timezone = city_config["timezone"]
+        else:
+            # Backward compatibility
+            self.lat = config.LATITUDE
+            self.lon = config.LONGITUDE
+            self.city_name = config.CITY_NAME
+            self.country_code = config.COUNTRY_CODE
+            self.timezone = config.TIMEZONE
 
     def get_current_weather(self):
         """Get current weather data from OpenWeatherMap"""
@@ -93,7 +110,7 @@ class WeatherService:
 
     def _parse_current_weather(self, data):
         """Parse current weather data"""
-        timezone = pytz.timezone(config.TIMEZONE)
+        timezone = pytz.timezone(self.timezone)
         current_time = datetime.now(timezone)
 
         return {
@@ -117,7 +134,7 @@ class WeatherService:
 
     def _parse_forecast(self, data, hours):
         """Parse forecast data"""
-        timezone = pytz.timezone(config.TIMEZONE)
+        timezone = pytz.timezone(self.timezone)
         forecasts = []
 
         for hour_data in data.get("hourly", [])[:hours]:
@@ -145,7 +162,7 @@ class WeatherService:
 
     def _parse_alerts(self, alerts):
         """Parse weather alerts"""
-        timezone = pytz.timezone(config.TIMEZONE)
+        timezone = pytz.timezone(self.timezone)
         parsed_alerts = []
 
         for alert in alerts:

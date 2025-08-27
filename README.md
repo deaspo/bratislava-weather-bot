@@ -1,8 +1,20 @@
-# Bratislava Weather Bot 🌤️🇸🇰
+# Multi-City Weather Bot 🌤️🇸🇰🇰🇪
 
-Automated Twitter bot that posts hourly weather updates for Bratislava, Slovakia using OpenWeatherMap API with automated deployment via Caprover.
+Automated Twitter bot that posts hourly weather updates for multiple cities:
+- **Bratislava, Slovakia** 🇸🇰
+- **Nairobi, Kenya** 🇰🇪  
+- **Kisumu, Kenya** 🇰🇪
+
+Uses OpenWeatherMap API with automated deployment via Caprover and staggered hourly updates to avoid rate limiting.
 
 ## ✨ Features
+
+### 🌍 Multi-City Support
+- **Three Cities**: Bratislava, Nairobi, and Kisumu
+- **Staggered Updates**: Posts at different times to avoid rate limits
+- **City-Specific Hashtags**: Customized hashtags for each location
+- **Timezone Aware**: Proper timezone handling for each city
+- **Individual or Batch**: Support for single-city or multi-city operations
 
 ### 🌤️ Weather Features
 - **Hourly Updates**: Current weather conditions with emojis
@@ -12,7 +24,7 @@ Automated Twitter bot that posts hourly weather updates for Bratislava, Slovakia
 - **Extreme Conditions**: Automatic alerts for dangerous weather
 
 ### 🤖 Bot Features
-- **Multiple Modes**: Current, forecast, alerts, daily, and test modes
+- **Multiple Modes**: Current, forecast, alerts, daily, multi-city, and test modes
 - **Smart Formatting**: Weather-appropriate emojis and clear messaging
 - **Error Handling**: Robust error recovery and logging
 - **Rate Limiting**: Respects API limits and handles rate limiting
@@ -95,6 +107,24 @@ bratislava-weather-bot/
 
 ## 🎯 Bot Operation Modes
 
+### Multi-City Commands
+```bash
+# Post weather for all cities (Bratislava, Nairobi, Kisumu)
+python main.py --mode multi-city
+
+# Post weather for a specific city
+python main.py --mode city --city Bratislava
+python main.py --mode city --city Nairobi  
+python main.py --mode city --city Kisumu
+
+# Test all cities
+python main.py --mode test
+
+# Test specific city
+python main.py --mode test --city Nairobi
+```
+
+### Single-City Commands (Bratislava - backward compatibility)
 ```bash
 # Post current weather (default for cron)
 python main.py --mode current
@@ -111,7 +141,7 @@ python main.py --mode daily
 # Run continuous scheduling (for development)
 python main.py --mode schedule
 
-# Test all functionality
+# Test functionality
 python main.py --mode test
 ```
 

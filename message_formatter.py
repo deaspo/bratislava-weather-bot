@@ -7,12 +7,24 @@ class MessageFormatter:
         self.city_name = config.CITY_NAME
         self.country_code = config.COUNTRY_CODE
 
-    def format_current_weather(self, weather_data):
+    def format_current_weather(self, weather_data, city_name=None, custom_hashtags=None):
         """Format current weather into a tweet message"""
+        city = city_name or self.city_name
         emojis = self._get_weather_emoji(weather_data["main"])
         temp_emoji = self._get_temperature_emoji(weather_data["temperature"])
 
-        message = f"{emojis} Weather Update for {self.city_name} 🇸🇰\n\n"
+        # Determine country flag based on city
+        if city_name:
+            if city_name in ["Nairobi", "Kisumu"]:
+                flag = "🇰🇪"
+            elif city_name == "Bratislava":
+                flag = "🇸🇰"
+            else:
+                flag = ""
+        else:
+            flag = "🇸🇰"  # Default for Bratislava
+
+        message = f"{emojis} Weather Update for {city} {flag}\n\n"
         message += f"{temp_emoji} {weather_data['temperature']}°C (feels like {weather_data['feels_like']}°C)\n"
         message += f"🌡️ {weather_data['description']}\n"
         message += f"💧 Humidity: {weather_data['humidity']}%\n"
@@ -22,6 +34,11 @@ class MessageFormatter:
             message += f"👁️ Visibility: {weather_data['visibility']} km\n"
 
         message += f"\n⏰ {weather_data['timestamp'].strftime('%H:%M %d/%m/%Y')}"
+        
+        # Add custom hashtags if provided
+        if custom_hashtags:
+            hashtag_str = " ".join(custom_hashtags)
+            message += f"\n\n{hashtag_str}"
 
         return message
 

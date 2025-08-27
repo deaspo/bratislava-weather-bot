@@ -14,7 +14,7 @@ class TwitterService:
         try:
             # Twitter API v1.1 authentication (for legacy features if needed)
             auth = tweepy.OAuthHandler(
-                config.TWITTER_API_KEY, config.TWITTER_API_SECRET
+                config.TWITTER_CONSUMER_KEY, config.TWITTER_CONSUMER_SECRET
             )
             auth.set_access_token(
                 config.TWITTER_ACCESS_TOKEN, config.TWITTER_ACCESS_TOKEN_SECRET
@@ -24,8 +24,8 @@ class TwitterService:
             # Twitter API v2 authentication (for posting tweets)
             self.client = tweepy.Client(
                 bearer_token=config.TWITTER_BEARER_TOKEN,
-                consumer_key=config.TWITTER_API_KEY,
-                consumer_secret=config.TWITTER_API_SECRET,
+                consumer_key=config.TWITTER_CONSUMER_KEY,
+                consumer_secret=config.TWITTER_CONSUMER_SECRET,
                 access_token=config.TWITTER_ACCESS_TOKEN,
                 access_token_secret=config.TWITTER_ACCESS_TOKEN_SECRET,
                 wait_on_rate_limit=True,
