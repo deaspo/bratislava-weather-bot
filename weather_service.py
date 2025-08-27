@@ -16,7 +16,7 @@ class WeatherService:
         self.api_key = config.OPENWEATHER_API_KEY
         self.base_url = config.OPENWEATHER_BASE_URL
         self.onecall_url = config.OPENWEATHER_ONECALL_URL
-        
+
         if city_config:
             self.lat = city_config["latitude"]
             self.lon = city_config["longitude"]

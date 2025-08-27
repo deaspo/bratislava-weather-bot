@@ -7,7 +7,9 @@ class MessageFormatter:
         self.city_name = config.CITY_NAME
         self.country_code = config.COUNTRY_CODE
 
-    def format_current_weather(self, weather_data, city_name=None, custom_hashtags=None):
+    def format_current_weather(
+        self, weather_data, city_name=None, custom_hashtags=None
+    ):
         """Format current weather into a tweet message"""
         city = city_name or self.city_name
         emojis = self._get_weather_emoji(weather_data["main"])
@@ -34,7 +36,7 @@ class MessageFormatter:
             message += f"👁️ Visibility: {weather_data['visibility']} km\n"
 
         message += f"\n⏰ {weather_data['timestamp'].strftime('%H:%M %d/%m/%Y')}"
-        
+
         # Add custom hashtags if provided
         if custom_hashtags:
             hashtag_str = " ".join(custom_hashtags)

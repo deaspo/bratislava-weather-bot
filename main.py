@@ -204,7 +204,16 @@ def main():
     parser = argparse.ArgumentParser(description="Multi-City Weather Bot")
     parser.add_argument(
         "--mode",
-        choices=["current", "forecast", "alerts", "daily", "schedule", "test", "multi-city", "city"],
+        choices=[
+            "current",
+            "forecast",
+            "alerts",
+            "daily",
+            "schedule",
+            "test",
+            "multi-city",
+            "city",
+        ],
         default="current",
         help="Bot operation mode",
     )
@@ -212,7 +221,9 @@ def main():
         "--hours", type=int, default=6, help="Hours for forecast (default: 6)"
     )
     parser.add_argument(
-        "--city", type=str, help="Specific city for single city operations (Bratislava, Nairobi, Kisumu)"
+        "--city",
+        type=str,
+        help="Specific city for single city operations (Bratislava, Nairobi, Kisumu)",
     )
 
     args = parser.parse_args()
@@ -223,13 +234,13 @@ def main():
             multi_bot = MultiCityWeatherBot()
             multi_bot.post_current_weather_all_cities()
             sys.exit(0)
-            
+
         elif args.mode == "city" and args.city:
             # Single city mode with specified city
             multi_bot = MultiCityWeatherBot()
             success = multi_bot.post_current_weather_city(args.city)
             sys.exit(0 if success else 1)
-            
+
         elif args.mode == "test":
             if args.city:
                 # Test specific city
@@ -239,18 +250,21 @@ def main():
                     logger.info("✅ Test completed for %s", args.city)
                     sys.exit(0 if success else 1)
                 else:
-                    logger.error("❌ City %s not configured. Available cities: %s", 
-                               args.city, ', '.join(multi_bot.get_available_cities()))
+                    logger.error(
+                        "❌ City %s not configured. Available cities: %s",
+                        args.city,
+                        ", ".join(multi_bot.get_available_cities()),
+                    )
                     sys.exit(1)
             else:
                 # Test all cities
                 multi_bot = MultiCityWeatherBot()
                 multi_bot.test_all_cities()
-                
+
                 # Also test the original single-city bot for backward compatibility
                 logger.info("Testing original single-city bot...")
                 bot = BratislavaWeatherBot()
-                
+
                 weather = bot.weather_service.get_current_weather()
                 if weather:
                     logger.info("✅ Single-city weather service working")
@@ -260,7 +274,9 @@ def main():
 
                 account_info = bot.twitter_service.get_account_info()
                 if account_info:
-                    logger.info("✅ Twitter service working - @%s", account_info["username"])
+                    logger.info(
+                        "✅ Twitter service working - @%s", account_info["username"]
+                    )
                 else:
                     logger.error("❌ Twitter service failed")
                     sys.exit(1)

@@ -23,15 +23,15 @@ CITIES = [
         "latitude": 48.1482,
         "longitude": 17.1067,
         "timezone": "Europe/Bratislava",
-        "hashtags": ["#Bratislava", "#Slovakia", "#Weather"]
+        "hashtags": ["#Bratislava", "#Slovakia", "#Weather"],
     },
     {
         "name": "Nairobi",
-        "country_code": "KE", 
+        "country_code": "KE",
         "latitude": -1.2921,
         "longitude": 36.8219,
         "timezone": "Africa/Nairobi",
-        "hashtags": ["#Nairobi", "#Kenya", "#Weather"]
+        "hashtags": ["#Nairobi", "#Kenya", "#Weather"],
     },
     {
         "name": "Kisumu",
@@ -39,8 +39,8 @@ CITIES = [
         "latitude": -0.1022,
         "longitude": 34.7617,
         "timezone": "Africa/Nairobi",
-        "hashtags": ["#Kisumu", "#Kenya", "#Weather"]
-    }
+        "hashtags": ["#Kisumu", "#Kenya", "#Weather"],
+    },
 ]
 
 # Backward compatibility for single city mode
