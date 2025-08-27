@@ -40,25 +40,33 @@ print_info "Caprover CLI found ✅"
 echo ""
 echo "Please provide your Caprover details:"
 
-read -p "Caprover URL (e.g., https://captain.yourdomain.com): " CAPROVER_URL
-read -s -p "Caprover Password: " CAPROVER_PASSWORD
+read -p "Caprover Server URL (e.g., https://captain.yourdomain.com): " CAPROVER_SERVER
+read -s -p "Caprover Root Password: " CAPROVER_PASSWORD
 echo ""
 read -p "App Name (e.g., bratislava-weather-bot): " APP_NAME
 
 # Login to Caprover
 print_info "Logging into Caprover..."
-caprover login --caproverUrl "$CAPROVER_URL" --caproverPassword "$CAPROVER_PASSWORD"
+caprover login --caproverUrl "$CAPROVER_SERVER" --caproverPassword "$CAPROVER_PASSWORD"
 
 # Check if app exists, if not create it
 print_info "Checking if app exists..."
-if caprover list --caproverUrl "$CAPROVER_URL" --caproverPassword "$CAPROVER_PASSWORD" | grep -q "$APP_NAME"; then
+if caprover list --caproverUrl "$CAPROVER_SERVER" --caproverPassword "$CAPROVER_PASSWORD" | grep -q "$APP_NAME"; then
     print_info "App '$APP_NAME' already exists"
 else
     print_info "Creating new app '$APP_NAME'..."
-    caprover app --caproverUrl "$CAPROVER_URL" --caproverPassword "$CAPROVER_PASSWORD" --caproverApp "$APP_NAME" --action create
+    caprover app --caproverUrl "$CAPROVER_SERVER" --caproverPassword "$CAPROVER_PASSWORD" --caproverApp "$APP_NAME" --action create
 fi
 
 print_info "Configuring app settings..."
+
+# Enable app token for GitHub Actions deployment
+print_info "Enabling app token for GitHub Actions..."
+print_warning "You need to manually enable the app token in Caprover dashboard:"
+print_warning "1. Go to your Caprover dashboard: $CAPROVER_SERVER"
+print_warning "2. Navigate to Apps > $APP_NAME > Deployment tab"
+print_warning "3. Click 'Enable App Token' and copy the token"
+print_warning "4. Add this token to GitHub Secrets as 'APP_TOKEN'"
 
 # Set environment variables
 echo ""
@@ -126,22 +134,21 @@ EOF
 
 print_info "App configuration saved to caprover_config.json"
 
-# Deploy the app
-print_info "Deploying the application..."
-caprover deploy --caproverUrl "$CAPROVER_URL" --caproverPassword "$CAPROVER_PASSWORD" --caproverApp "$APP_NAME"
-
-# Cleanup
-rm -f /tmp/env_vars.json
-
 print_info "✅ Setup complete!"
 echo ""
 echo "📋 Next steps:"
-echo "1. Go to your Caprover dashboard: $CAPROVER_URL"
-echo "2. Navigate to Apps > $APP_NAME"
-echo "3. Set the environment variables manually if they weren't set"
-echo "4. Enable persistent data if needed"
-echo "5. Check the app logs to ensure it's running correctly"
+echo "1. Go to your Caprover dashboard: $CAPROVER_SERVER"
+echo "2. Navigate to Apps > $APP_NAME > Deployment tab"
+echo "3. Enable App Token and copy it"
+echo "4. Add GitHub Secrets (see below)"
+echo "5. Set environment variables in the app settings"
+echo "6. Push to 'devel' branch to trigger deployment"
+echo ""
+echo "🔐 GitHub Secrets to add:"
+echo "   CAPROVER_SERVER = $CAPROVER_SERVER"
+echo "   APP_NAME = $APP_NAME"
+echo "   APP_TOKEN = <token from Caprover dashboard>"
 echo ""
 echo "🔗 Your app will be available at: https://$APP_NAME.yourdomain.com"
 echo ""
-print_info "GitHub Actions will now automatically deploy on push to 'devel' branch"
+print_info "GitHub Actions will automatically deploy on push to 'devel' branch"

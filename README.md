@@ -64,13 +64,13 @@ bratislava-weather-bot/
 
 ### Option 1: Caprover Deployment (Recommended)
 
-1. **Setup Caprover on your Hetzner VPS** (see [CAPROVER_DEPLOYMENT.md](CAPROVER_DEPLOYMENT.md))
+1. **Setup Caprover on your Hetzner VPS** (see [CAPROVER_OFFICIAL_SETUP.md](CAPROVER_OFFICIAL_SETUP.md))
 2. **Get API Keys** (see [API_SETUP.md](API_SETUP.md))
 3. **Deploy with automated script:**
    ```bash
    ./caprover-setup.sh
    ```
-4. **Set up GitHub Actions** for automated deployments
+4. **Configure GitHub Secrets** (APP_TOKEN, CAPROVER_SERVER, APP_NAME)
 5. **Push to `devel` branch** to trigger deployment
 
 ### Option 2: Local/VPS Deployment
@@ -216,7 +216,8 @@ git push origin devel  # Triggers automatic deployment
 
 - **[API_SETUP.md](API_SETUP.md)** - Twitter and OpenWeatherMap API setup
 - **[DEPLOYMENT.md](DEPLOYMENT.md)** - Local/VPS deployment guide
-- **[CAPROVER_DEPLOYMENT.md](CAPROVER_DEPLOYMENT.md)** - Caprover deployment guide
+- **[CAPROVER_OFFICIAL_SETUP.md](CAPROVER_OFFICIAL_SETUP.md)** - Official Caprover deployment method
+- **[CAPROVER_DEPLOYMENT.md](CAPROVER_DEPLOYMENT.md)** - Alternative Caprover setup guide
 
 ## 🤝 Contributing
 

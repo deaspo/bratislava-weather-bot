@@ -1,4 +1,4 @@
-name: Deploy to Caprover
+name: Build & Deploy to Caprover
 
 on:
   push:
@@ -6,15 +6,13 @@ on:
   pull_request:
     branches: [ devel ]
 
-env:
-  NODE_VERSION: '18'
-
 jobs:
   test:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v4
+    - name: Check out repository
+      uses: actions/checkout@v4
     
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -33,7 +31,6 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install pytest  # For future testing
         
     - name: Lint Python code
       run: |
@@ -48,37 +45,52 @@ jobs:
       run: |
         python -c "import config; print('✅ Configuration validation passed')"
 
-  deploy:
+  build-and-deploy:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/devel' && github.event_name == 'push'
-    
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to Container Registry
+      uses: docker/login-action@v3
       with:
-        node-version: ${{ env.NODE_VERSION }}
-        
-    - name: Install Caprover CLI
-      run: npm install -g caprover
-      
-    - name: Deploy to Caprover
-      env:
-        CAPROVER_URL: ${{ secrets.CAPROVER_URL }}
-        CAPROVER_PASSWORD: ${{ secrets.CAPROVER_PASSWORD }}
-        CAPROVER_APP_NAME: ${{ secrets.CAPROVER_APP_NAME }}
-      run: |
-        caprover login --caproverUrl $CAPROVER_URL --caproverPassword $CAPROVER_PASSWORD
-        caprover deploy --caproverUrl $CAPROVER_URL --caproverPassword $CAPROVER_PASSWORD --caproverApp $CAPROVER_APP_NAME
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Preset Image Name
+      run: echo "IMAGE_URL=$(echo ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:$(echo ${{ github.sha }} | cut -c1-7) | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+    - name: Build and push Docker Image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: ${{ env.IMAGE_URL }}
+        platforms: linux/amd64
+
+    - name: Deploy Image to CapRover
+      uses: caprover/deploy-from-github@v1.1.2
+      with:
+        server: '${{ secrets.CAPROVER_SERVER }}'
+        app: '${{ secrets.APP_NAME }}'
+        token: '${{ secrets.APP_TOKEN }}'
+        image: ${{ env.IMAGE_URL }}
         
     - name: Deployment Success Notification
       if: success()
       run: |
         echo "🎉 Deployment successful!"
-        echo "Bot deployed to: ${{ secrets.CAPROVER_URL }}"
-        echo "App name: ${{ secrets.CAPROVER_APP_NAME }}"
+        echo "Bot deployed to: ${{ secrets.CAPROVER_SERVER }}"
+        echo "App: ${{ secrets.APP_NAME }}"
+        echo "Image: ${{ env.IMAGE_URL }}"
         
     - name: Deployment Failure Notification
       if: failure()
