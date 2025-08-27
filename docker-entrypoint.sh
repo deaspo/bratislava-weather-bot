@@ -36,26 +36,21 @@ python main.py --mode test || {
 echo "🕐 Starting cron daemon..."
 service cron start
 
-# Setup multi-city cron jobs for hourly updates
+# Setup single multi-city cron job for hourly updates
 echo "⚙️ Setting up hourly weather updates..."
 
-# Create cron entries for each city at staggered times
-echo "0 * * * * cd /app && python main.py --mode city --city Bratislava >> logs/bratislava_cron.log 2>&1" >> /tmp/crontab
-echo "5 * * * * cd /app && python main.py --mode city --city Nairobi >> logs/nairobi_cron.log 2>&1" >> /tmp/crontab
-echo "10 * * * * cd /app && python main.py --mode city --city Kisumu >> logs/kisumu_cron.log 2>&1" >> /tmp/crontab
+# Create single cron entry for all cities (uses multi-city mode with built-in delays)
+echo "0 * * * * cd /app && python main.py --mode multi-city >> logs/multi_city_cron.log 2>&1" >> /tmp/crontab
 
 # Install cron jobs
 crontab /tmp/crontab
 
-# Create initial log entries
-echo "$(date): Multi-City Weather Bot started" >> logs/bratislava_cron.log
-echo "$(date): Multi-City Weather Bot started" >> logs/nairobi_cron.log  
-echo "$(date): Multi-City Weather Bot started" >> logs/kisumu_cron.log
+# Create initial log entry
+echo "$(date): Multi-City Weather Bot started" >> logs/multi_city_cron.log
 
 echo "✅ Hourly updates scheduled:"
-echo "   - Bratislava: Every hour at minute 0"
-echo "   - Nairobi: Every hour at minute 5"
-echo "   - Kisumu: Every hour at minute 10"
+echo "   - All cities (Bratislava, Nairobi, Kisumu): Every hour at minute 0"
+echo "   - Built-in 5-second delays between cities to avoid rate limits"
 
 # Start health check server in background
 echo "🏥 Starting health check server..."
