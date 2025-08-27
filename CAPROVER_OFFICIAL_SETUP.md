@@ -53,10 +53,12 @@ Since we're using GitHub Container Registry (ghcr.io):
 Add these secrets in **GitHub > Settings > Secrets and variables > Actions**:
 
 ```
-CAPROVER_SERVER = https://captain.yourdomain.com
-APP_NAME = bratislava-weather-bot
-APP_TOKEN = <token-from-caprover-dashboard>
+WEATHER_CAPROVER_SERVER = https://captain.yourdomain.com
+WEATHER_APP_NAME = bratislava-weather-bot
+WEATHER_APP_TOKEN = <token-from-caprover-dashboard>
 ```
+
+**Note**: Using `WEATHER_` prefix to avoid conflicts with other Caprover apps in the same GitHub account.
 
 ### Step 5: Set Environment Variables in Caprover
 
@@ -151,7 +153,7 @@ Push to ghcr.io → Deploy to Caprover → App Running!
 
 #### 2. App Token Invalid
 - Regenerate app token in Caprover dashboard
-- Update GitHub secrets with new token
+- Update GitHub secrets with new `WEATHER_APP_TOKEN`
 - Ensure no extra spaces in secret values
 
 #### 3. Build Fails

@@ -38,9 +38,9 @@ git push -u origin devel
 
 ### Step 2: Configure GitHub Secrets
 In your GitHub repository (`Settings > Secrets and variables > Actions`):
-- [ ] `CAPROVER_URL` = https://captain.yourdomain.com
-- [ ] `CAPROVER_PASSWORD` = your-caprover-password  
-- [ ] `CAPROVER_APP_NAME` = bratislava-weather-bot
+- [ ] `WEATHER_CAPROVER_SERVER` = https://captain.yourdomain.com
+- [ ] `WEATHER_APP_NAME` = bratislava-weather-bot
+- [ ] `WEATHER_APP_TOKEN` = your-caprover-app-token
 
 ### Step 3: Deploy with Caprover
 Option A - Automated Script:

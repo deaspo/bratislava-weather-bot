@@ -70,7 +70,7 @@ bratislava-weather-bot/
    ```bash
    ./caprover-setup.sh
    ```
-4. **Configure GitHub Secrets** (APP_TOKEN, CAPROVER_SERVER, APP_NAME)
+4. **Configure GitHub Secrets** (WEATHER_APP_TOKEN, WEATHER_CAPROVER_SERVER, WEATHER_APP_NAME)
 5. **Push to `devel` branch** to trigger deployment
 
 ### Option 2: Local/VPS Deployment

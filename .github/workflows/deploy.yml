@@ -79,17 +79,17 @@ jobs:
     - name: Deploy Image to CapRover
       uses: caprover/deploy-from-github@v1.1.2
       with:
-        server: '${{ secrets.CAPROVER_SERVER }}'
-        app: '${{ secrets.APP_NAME }}'
-        token: '${{ secrets.APP_TOKEN }}'
+        server: '${{ secrets.WEATHER_CAPROVER_SERVER }}'
+        app: '${{ secrets.WEATHER_APP_NAME }}'
+        token: '${{ secrets.WEATHER_APP_TOKEN }}'
         image: ${{ env.IMAGE_URL }}
         
     - name: Deployment Success Notification
       if: success()
       run: |
         echo "🎉 Deployment successful!"
-        echo "Bot deployed to: ${{ secrets.CAPROVER_SERVER }}"
-        echo "App: ${{ secrets.APP_NAME }}"
+        echo "Bot deployed to: ${{ secrets.WEATHER_CAPROVER_SERVER }}"
+        echo "App: ${{ secrets.WEATHER_APP_NAME }}"
         echo "Image: ${{ env.IMAGE_URL }}"
         
     - name: Deployment Failure Notification
