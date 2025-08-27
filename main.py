@@ -214,7 +214,7 @@ def main():
             "multi-city",
             "city",
         ],
-        default="current",
+        default="multi-city",
         help="Bot operation mode",
     )
     parser.add_argument(

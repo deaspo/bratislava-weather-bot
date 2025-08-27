@@ -109,7 +109,8 @@ bratislava-weather-bot/
 
 ### Multi-City Commands
 ```bash
-# Post weather for all cities (Bratislava, Nairobi, Kisumu)
+# Post weather for all cities (NEW DEFAULT - runs when no arguments provided)
+python main.py
 python main.py --mode multi-city
 
 # Post weather for a specific city
@@ -126,7 +127,7 @@ python main.py --mode test --city Nairobi
 
 ### Single-City Commands (Bratislava - backward compatibility)
 ```bash
-# Post current weather (default for cron)
+# Post current weather for Bratislava only
 python main.py --mode current
 
 # Post weather forecast
