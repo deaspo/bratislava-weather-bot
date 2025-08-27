@@ -50,19 +50,7 @@ jobs:
       with:
         command: c
         cwd: "./"
-        files: |
-          main.py
-          weather_service.py
-          twitter_service.py
-          message_formatter.py
-          multi_city_bot.py
-          config.py
-          logger.py
-          healthcheck.py
-          requirements.txt
-          Dockerfile
-          docker-entrypoint.sh
-          captain-definition
+        files: ./
         outPath: deploy.tar
 
     - name: Deploy App to CapRover
