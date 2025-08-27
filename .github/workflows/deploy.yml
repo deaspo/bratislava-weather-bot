@@ -1,0 +1,87 @@
+name: Deploy to Caprover
+
+on:
+  push:
+    branches: [ devel ]
+  pull_request:
+    branches: [ devel ]
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest  # For future testing
+        
+    - name: Lint Python code
+      run: |
+        python -m py_compile main.py
+        python -m py_compile weather_service.py
+        python -m py_compile twitter_service.py
+        python -m py_compile message_formatter.py
+        python -m py_compile config.py
+        python -m py_compile logger.py
+        
+    - name: Validate configuration
+      run: |
+        python -c "import config; print('✅ Configuration validation passed')"
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/devel' && github.event_name == 'push'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        
+    - name: Install Caprover CLI
+      run: npm install -g caprover
+      
+    - name: Deploy to Caprover
+      env:
+        CAPROVER_URL: ${{ secrets.CAPROVER_URL }}
+        CAPROVER_PASSWORD: ${{ secrets.CAPROVER_PASSWORD }}
+        CAPROVER_APP_NAME: ${{ secrets.CAPROVER_APP_NAME }}
+      run: |
+        caprover login --caproverUrl $CAPROVER_URL --caproverPassword $CAPROVER_PASSWORD
+        caprover deploy --caproverUrl $CAPROVER_URL --caproverPassword $CAPROVER_PASSWORD --caproverApp $CAPROVER_APP_NAME
+        
+    - name: Deployment Success Notification
+      if: success()
+      run: |
+        echo "🎉 Deployment successful!"
+        echo "Bot deployed to: ${{ secrets.CAPROVER_URL }}"
+        echo "App name: ${{ secrets.CAPROVER_APP_NAME }}"
+        
+    - name: Deployment Failure Notification
+      if: failure()
+      run: |
+        echo "❌ Deployment failed!"
+        echo "Check the logs above for details."
