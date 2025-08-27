@@ -271,6 +271,6 @@ This project is open source. Feel free to use and modify for your own weather bo
 
 ---
 
-**Twitter**: [@BratislavaSK](https://twitter.com/BratislavaSK) (or your chosen handle)  
+**Twitter**: [@kidiwalogha](https://twitter.com/kidiwalogha) (or your chosen handle)  
 **Weather Data**: Powered by [OpenWeatherMap](https://openweathermap.org/)  
 **Deployment**: [Caprover](https://caprover.com/) + [GitHub Actions](https://github.com/features/actions)
