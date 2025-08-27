@@ -100,6 +100,14 @@ bratislava-weather-bot/
    ```bash
    python main.py --mode test
    ```
+
+### 📦 Production Configuration
+
+For production deployments (Caprover), the bot automatically skips startup tests to avoid rate limiting. You can control this behavior:
+
+- **Production Mode (recommended)**: Set `SKIP_STARTUP_TEST=true` in Caprover environment variables
+- **Development Mode**: Leave `SKIP_STARTUP_TEST` unset or set to `false`
+
 4. **Set up cron job:**
    ```bash
    ./setup_cron.sh

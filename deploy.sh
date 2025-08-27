@@ -39,8 +39,8 @@ chmod +x main.py
 # Create logs directory
 mkdir -p logs
 
-# Test the bot
-echo "🧪 Testing bot functionality..."
+# Test the bot (only for local setup)
+echo "🧪 Testing bot functionality (local only)..."
 python main.py --mode test
 
 echo "✅ Setup complete!"

@@ -18,19 +18,24 @@ elif [ -n "$OPENWEATHER_API_KEY" ]; then
     echo "✅ Environment variables detected from Caprover"
 fi
 
-# Test bot functionality before starting services
-echo "🧪 Testing bot functionality..."
-python main.py --mode test || {
-    echo "❌ Bot test failed! Please check your API keys and configuration."
-    echo "📋 Required environment variables:"
-    echo "   - OPENWEATHER_API_KEY"
-    echo "   - TWITTER_CONSUMER_KEY"
-    echo "   - TWITTER_CONSUMER_SECRET" 
-    echo "   - TWITTER_ACCESS_TOKEN"
-    echo "   - TWITTER_ACCESS_TOKEN_SECRET"
-    echo "   - TWITTER_BEARER_TOKEN"
-    exit 1
-}
+# Skip testing in production to avoid rate limits
+if [ "$ENVIRONMENT" = "development" ] || [ "$SKIP_STARTUP_TEST" != "true" ]; then
+    echo "🧪 Testing bot functionality..."
+    python main.py --mode test || {
+        echo "❌ Bot test failed! Please check your API keys and configuration."
+        echo "📋 Required environment variables:"
+        echo "   - OPENWEATHER_API_KEY"
+        echo "   - TWITTER_CONSUMER_KEY"
+        echo "   - TWITTER_CONSUMER_SECRET" 
+        echo "   - TWITTER_ACCESS_TOKEN"
+        echo "   - TWITTER_ACCESS_TOKEN_SECRET"
+        echo "   - TWITTER_BEARER_TOKEN"
+        exit 1
+    }
+else
+    echo "⏩ Skipping startup test in production to avoid rate limits"
+    echo "✅ Production mode - assuming configuration is valid"
+fi
 
 # Start cron daemon
 echo "🕐 Starting cron daemon..."
