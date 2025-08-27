@@ -19,7 +19,7 @@ class TwitterService:
             auth.set_access_token(
                 config.TWITTER_ACCESS_TOKEN, config.TWITTER_ACCESS_TOKEN_SECRET
             )
-            self.api = tweepy.API(auth, wait_on_rate_limit=False)
+            self.api = tweepy.API(auth, wait_on_rate_limit=True)
 
             # Twitter API v2 authentication (for posting tweets)
             self.client = tweepy.Client(
@@ -28,7 +28,7 @@ class TwitterService:
                 consumer_secret=config.TWITTER_CONSUMER_SECRET,
                 access_token=config.TWITTER_ACCESS_TOKEN,
                 access_token_secret=config.TWITTER_ACCESS_TOKEN_SECRET,
-                wait_on_rate_limit=False,
+                wait_on_rate_limit=True,
             )
 
             # Test authentication
