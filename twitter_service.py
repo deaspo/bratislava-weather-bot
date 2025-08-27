@@ -63,16 +63,19 @@ class TwitterService:
 
             logger.info("Successfully posted tweet with ID: %s", tweet_id)
             return tweet_id
-            
+
         except tweepy.TooManyRequests:
             logger.warning("Rate limit exceeded. Skipping tweet to avoid long delays.")
-            logger.info("Tweet that was skipped: %s", message[:50] + "..." if len(message) > 50 else message)
+            logger.info(
+                "Tweet that was skipped: %s",
+                message[:50] + "..." if len(message) > 50 else message,
+            )
             return None
-            
+
         except tweepy.Forbidden:
             logger.error("Forbidden: Check API permissions and authentication")
             return None
-            
+
         except Exception as e:
             logger.error("Error posting tweet: %s", e)
             return None

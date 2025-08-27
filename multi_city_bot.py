@@ -52,12 +52,20 @@ class MultiCityWeatherBot:
                 # Post to Twitter
                 tweet_id = self.twitter_service.post_tweet(message)
                 if tweet_id:
-                    logger.info("Successfully posted weather update for %s (Tweet ID: %s)", city_name, tweet_id)
+                    logger.info(
+                        "Successfully posted weather update for %s (Tweet ID: %s)",
+                        city_name,
+                        tweet_id,
+                    )
                 else:
-                    logger.warning("Skipped posting weather update for %s (rate limited or failed)", city_name)
+                    logger.warning(
+                        "Skipped posting weather update for %s (rate limited or failed)",
+                        city_name,
+                    )
 
                 # Small delay between city posts to avoid rate limiting
                 import time
+
                 time.sleep(5)
 
         except Exception as e:
