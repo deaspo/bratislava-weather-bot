@@ -19,7 +19,7 @@ class TwitterService:
             auth.set_access_token(
                 config.TWITTER_ACCESS_TOKEN, config.TWITTER_ACCESS_TOKEN_SECRET
             )
-            self.api = tweepy.API(auth, wait_on_rate_limit=True)
+            self.api = tweepy.API(auth, wait_on_rate_limit=False)
 
             # Twitter API v2 authentication (for posting tweets)
             self.client = tweepy.Client(
@@ -28,7 +28,7 @@ class TwitterService:
                 consumer_secret=config.TWITTER_CONSUMER_SECRET,
                 access_token=config.TWITTER_ACCESS_TOKEN,
                 access_token_secret=config.TWITTER_ACCESS_TOKEN_SECRET,
-                wait_on_rate_limit=True,
+                wait_on_rate_limit=False,
             )
 
             # Test authentication
@@ -50,7 +50,7 @@ class TwitterService:
             raise
 
     def post_tweet(self, message):
-        """Post a tweet"""
+        """Post a tweet with rate limit handling"""
         try:
             if len(message) > 280:
                 logger.warning(
@@ -63,13 +63,16 @@ class TwitterService:
 
             logger.info("Successfully posted tweet with ID: %s", tweet_id)
             return tweet_id
-
+            
         except tweepy.TooManyRequests:
-            logger.error("Rate limit exceeded when posting tweet")
+            logger.warning("Rate limit exceeded. Skipping tweet to avoid long delays.")
+            logger.info("Tweet that was skipped: %s", message[:50] + "..." if len(message) > 50 else message)
             return None
+            
         except tweepy.Forbidden:
             logger.error("Forbidden: Check API permissions and authentication")
             return None
+            
         except Exception as e:
             logger.error("Error posting tweet: %s", e)
             return None
