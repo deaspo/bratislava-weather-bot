@@ -34,7 +34,7 @@ RUN mkdir -p logs
 RUN chmod +x main.py deploy.sh setup_cron.sh status.sh healthcheck.py
 
 # Create cron job file
-RUN echo "0 * * * * cd /app && python main.py --mode current >> logs/cron.log 2>&1" > /etc/cron.d/weather-bot
+RUN echo "0 * * * * cd /app && python main.py --mode multi-city >> logs/cron.log 2>&1" > /etc/cron.d/weather-bot
 
 # Give execution rights on the cron job
 RUN chmod 0644 /etc/cron.d/weather-bot
