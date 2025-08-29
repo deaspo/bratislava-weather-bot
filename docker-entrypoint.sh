@@ -41,20 +41,26 @@ fi
 echo "🕐 Starting cron daemon..."
 service cron start
 
+# Clear any existing cron jobs to avoid conflicts
+echo "🧹 Clearing any existing cron jobs..."
+crontab -r 2>/dev/null || echo "No existing crontab found"
+
 # Setup single multi-city cron job for hourly updates
 echo "⚙️ Setting up hourly weather updates..."
 
 # Create single cron entry for all cities (uses multi-city mode with built-in delays)
-echo "0 * * * * cd /app && python main.py --mode multi-city >> logs/multi_city_cron.log 2>&1" >> /tmp/crontab
+echo "0 * * * * cd /app && python main.py --mode multi-city >> logs/multi_city_cron.log 2>&1" > /tmp/crontab
 
 # Install cron jobs
 crontab /tmp/crontab
 
 echo "📋 Installed cron job:"
-cat /tmp/crontab
+crontab -l
 
 # Create initial log entry
+mkdir -p logs
 echo "$(date): Multi-City Weather Bot v2.0 started - All cities enabled" >> logs/multi_city_cron.log
+echo "$(date): Cron job should execute: python main.py --mode multi-city" >> logs/multi_city_cron.log
 
 echo "✅ Hourly updates scheduled:"
 echo "   - Multi-city mode: All cities (Bratislava, Nairobi, Kisumu) at minute 0"

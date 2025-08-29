@@ -26,18 +26,18 @@ class MultiCityWeatherBot:
     def post_current_weather_all_cities(self):
         """Post current weather update for all cities"""
         try:
-            logger.info("Starting multi-city weather update")
+            logger.info("=== Starting multi-city weather update for %d cities ===", len(self.cities))
 
-            for city in self.cities:
+            for i, city in enumerate(self.cities, 1):
                 city_name = city["name"]
                 weather_service = self.weather_services[city_name]
 
-                logger.info(f"Posting weather for {city_name}")
+                logger.info("[%d/%d] Processing weather for %s", i, len(self.cities), city_name)
 
                 # Get current weather
                 current_weather = weather_service.get_current_weather()
                 if not current_weather:
-                    logger.error(f"Failed to get weather data for {city_name}")
+                    logger.error("Failed to get weather data for %s", city_name)
                     continue
 
                 # Format message with city-specific hashtags
@@ -46,30 +46,32 @@ class MultiCityWeatherBot:
                 )
 
                 if not message:
-                    logger.error(f"Failed to format weather message for {city_name}")
+                    logger.error("Failed to format weather message for %s", city_name)
                     continue
 
                 # Post to Twitter
                 tweet_id = self.twitter_service.post_tweet(message)
                 if tweet_id:
                     logger.info(
-                        "Successfully posted weather update for %s (Tweet ID: %s)",
-                        city_name,
-                        tweet_id,
+                        "✅ [%d/%d] Successfully posted weather update for %s (Tweet ID: %s)",
+                        i, len(self.cities), city_name, tweet_id,
                     )
                 else:
                     logger.warning(
-                        "Skipped posting weather update for %s (rate limited or failed)",
-                        city_name,
+                        "⚠️ [%d/%d] Skipped posting weather update for %s (rate limited or failed)",
+                        i, len(self.cities), city_name,
                     )
 
                 # Small delay between city posts to avoid rate limiting
                 import time
+                if i < len(self.cities):  # Don't sleep after the last city
+                    logger.info("⏱️ Waiting 5 seconds before next city...")
+                    time.sleep(5)
 
-                time.sleep(5)
+            logger.info("=== Multi-city weather update completed ===")
 
         except Exception as e:
-            logger.error(f"Error in multi-city weather update: {e}")
+            logger.error("Error in multi-city weather update: %s", e)
 
     def post_current_weather_city(self, city_name):
         """Post current weather update for a specific city"""
