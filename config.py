@@ -15,16 +15,9 @@ OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
 OPENWEATHER_BASE_URL = "https://api.openweathermap.org/data/2.5"
 OPENWEATHER_ONECALL_URL = "https://api.openweathermap.org/data/3.0/onecall"
 
-# Multi-City Configuration
+# Multi-City Configuration  
+# Order: Nairobi → Kisumu → Bratislava
 CITIES = [
-    {
-        "name": "Bratislava",
-        "country_code": "SK",
-        "latitude": 48.1482,
-        "longitude": 17.1067,
-        "timezone": "Europe/Bratislava",
-        "hashtags": ["#Bratislava", "#Slovakia", "#Weather"],
-    },
     {
         "name": "Nairobi",
         "country_code": "KE",
@@ -40,6 +33,14 @@ CITIES = [
         "longitude": 34.7617,
         "timezone": "Africa/Nairobi",
         "hashtags": ["#Kisumu", "#Kenya", "#Weather"],
+    },
+    {
+        "name": "Bratislava",
+        "country_code": "SK",
+        "latitude": 48.1482,
+        "longitude": 17.1067,
+        "timezone": "Europe/Bratislava",
+        "hashtags": ["#Bratislava", "#Slovakia", "#Weather"],
     },
 ]
 

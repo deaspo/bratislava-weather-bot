@@ -21,7 +21,7 @@ fi
 # Skip testing in production to avoid rate limits
 if [ "$ENVIRONMENT" = "development" ] || [ "$SKIP_STARTUP_TEST" != "true" ]; then
     echo "🧪 Testing bot functionality..."
-    python main.py --mode test || {
+    python3 main.py --mode test || {
         echo "❌ Bot test failed! Please check your API keys and configuration."
         echo "📋 Required environment variables:"
         echo "   - OPENWEATHER_API_KEY"
@@ -49,7 +49,7 @@ crontab -r 2>/dev/null || echo "No existing crontab found"
 echo "⚙️ Setting up hourly weather updates..."
 
 # Create single cron entry for all cities (uses multi-city mode with built-in delays)
-echo "0 * * * * cd /app && python main.py --mode multi-city >> logs/multi_city_cron.log 2>&1" > /tmp/crontab
+echo "0 * * * * cd /app && /usr/local/bin/python3 main.py --mode multi-city >> logs/multi_city_cron.log 2>&1" > /tmp/crontab
 
 # Install cron jobs
 crontab /tmp/crontab
@@ -60,7 +60,7 @@ crontab -l
 # Create initial log entry
 mkdir -p logs
 echo "$(date): Multi-City Weather Bot v2.0 started - All cities enabled" >> logs/multi_city_cron.log
-echo "$(date): Cron job should execute: python main.py --mode multi-city" >> logs/multi_city_cron.log
+echo "$(date): Cron job should execute: /usr/local/bin/python3 main.py --mode multi-city" >> logs/multi_city_cron.log
 
 echo "✅ Hourly updates scheduled:"
 echo "   - Multi-city mode: All cities (Bratislava, Nairobi, Kisumu) at minute 0"
@@ -69,7 +69,7 @@ echo "   - Logs: Check logs/multi_city_cron.log for cron job output"
 
 # Start health check server in background
 echo "🏥 Starting health check server..."
-python healthcheck.py &
+python3 healthcheck.py &
 
 # Execute the main command
 echo "🚀 Starting main bot process..."
