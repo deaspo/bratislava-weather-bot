@@ -1,11 +1,11 @@
-# Bratislava Weather Bot - Complete Deployment Guide
+# Multi-City Weather Bot - Complete Deployment Guide
 
-This guide walks you through deploying the Bratislava Weather Bot on your Hetzner VPS.
+This guide walks you through deploying the Multi-City Weather Bot supporting Bratislava (Slovakia), Nairobi and Kisumu (Kenya) on your VPS.
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Hetzner VPS running Ubuntu/Debian
+- VPS running Ubuntu/Debian (tested on Hetzner)
 - SSH access to your server
 - Twitter Developer Account
 - OpenWeatherMap API Account
@@ -40,15 +40,22 @@ nano .env
 # Add your API keys (see API_SETUP.md for details)
 ```
 
-### 4. Test the Bot
+### 4. Test the Multi-City Bot
 ```bash
 # Activate virtual environment
 source venv/bin/activate
 
-# Test bot functionality
+# Test all cities
 python main.py --mode test
 
-# Test individual features
+# Test individual cities
+python main.py --mode test --city Nairobi
+python main.py --mode test --city Kisumu
+python main.py --mode test --city Bratislava
+
+# Test different modes (careful - these post to Twitter)
+python main.py --mode current --city Nairobi
+python main.py --mode forecast --hours 3
 python main.py --mode current
 python main.py --mode forecast --hours 6
 ```
@@ -102,25 +109,54 @@ nano .env
 # Open crontab
 crontab -e
 
-# Add this line for hourly updates:
+# Add this line for multi-city hourly updates:
+0 * * * * cd /path/to/bratislava-weather-bot && /path/to/bratislava-weather-bot/venv/bin/python main.py --mode multi-city >> logs/cron.log 2>&1
+
+# Alternative: Use current mode (same result)
 0 * * * * cd /path/to/bratislava-weather-bot && /path/to/bratislava-weather-bot/venv/bin/python main.py --mode current >> logs/cron.log 2>&1
+
+# Optional: Add daily summary at 7 AM
+0 7 * * * cd /path/to/bratislava-weather-bot && /path/to/bratislava-weather-bot/venv/bin/python main.py --mode daily >> logs/cron.log 2>&1
+
+# Optional: Add forecasts twice daily (8 AM and 8 PM)
+0 8,20 * * * cd /path/to/bratislava-weather-bot && /path/to/bratislava-weather-bot/venv/bin/python main.py --mode forecast --hours 6 >> logs/cron.log 2>&1
 ```
 
-## 🎯 Bot Operation Modes
+## 🎯 Multi-City Bot Operation Modes
 
-The bot supports several operation modes:
+The bot supports flexible multi-city and single-city operations:
 
+### Multi-City Commands (Default)
 ```bash
-# Post current weather (default)
-python main.py --mode current
+# Post current weather for all cities (Nairobi → Kisumu → Bratislava)
+python main.py                           # Default mode
+python main.py --mode current            # Explicit current mode
+python main.py --mode multi-city         # Explicit multi-city mode
 
-# Post weather forecast
-python main.py --mode forecast --hours 6
+# Multi-city forecasts
+python main.py --mode forecast           # 6-hour forecast for all cities
+python main.py --mode forecast --hours 12 # 12-hour forecast for all cities
 
-# Check and post weather alerts
-python main.py --mode alerts
+# Multi-city daily summaries and alerts
+python main.py --mode daily              # Daily summary for all cities  
+python main.py --mode alerts             # Check alerts for all cities
+```
 
-# Post daily summary
+### Single-City Commands
+```bash
+# Target specific cities
+python main.py --mode current --city Nairobi
+python main.py --mode current --city Kisumu
+python main.py --mode current --city Bratislava
+
+# City-specific forecasts
+python main.py --mode forecast --city Nairobi --hours 6
+python main.py --mode forecast --city Kisumu --hours 3
+python main.py --mode forecast --city Bratislava --hours 12
+
+# City-specific daily summaries
+python main.py --mode daily --city Nairobi
+python main.py --mode daily --city Kisumu
 python main.py --mode daily
 
 # Run continuous scheduling (for development)
