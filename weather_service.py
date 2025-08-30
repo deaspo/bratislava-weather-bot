@@ -113,22 +113,22 @@ class WeatherService:
 
         # 2.5 forecast API returns data in 3-hour intervals
         forecast_list = data.get("list", [])
-        
+
         # Calculate how many 3-hour intervals we need for the requested hours
         intervals_needed = min(len(forecast_list), (hours // 3) + 1)
 
         for forecast_data in forecast_list[:intervals_needed]:
             forecast_time = datetime.fromtimestamp(forecast_data["dt"], timezone)
-            
+
             # Extract rain data safely
             rain_mm = 0
             if "rain" in forecast_data:
                 rain_mm += forecast_data["rain"].get("3h", 0)
-            
-            # Extract snow data safely  
+
+            # Extract snow data safely
             if "snow" in forecast_data:
                 rain_mm += forecast_data["snow"].get("3h", 0)
-            
+
             forecasts.append(
                 {
                     "timestamp": forecast_time,

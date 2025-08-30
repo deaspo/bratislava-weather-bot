@@ -33,8 +33,8 @@ RUN mkdir -p logs
 # Make scripts executable
 RUN chmod +x main.py deploy.sh setup_cron.sh status.sh healthcheck.py
 
-# Create cron job file
-RUN echo "0 * * * * cd /app && python main.py --mode multi-city >> logs/cron.log 2>&1" > /etc/cron.d/weather-bot
+# Create cron job file (this will be overridden by entrypoint script)
+RUN echo "0 * * * * cd /app && python3 main.py --mode multi-city >> logs/cron.log 2>&1" > /etc/cron.d/weather-bot
 
 # Give execution rights on the cron job
 RUN chmod 0644 /etc/cron.d/weather-bot
@@ -56,5 +56,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Set the entrypoint
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-# Default command
-CMD ["python", "main.py", "--mode", "schedule"]
+# Default command - just keep container running, cron handles the scheduling
+CMD ["tail", "-f", "/dev/null"]

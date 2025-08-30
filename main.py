@@ -360,52 +360,33 @@ def main():
 
                 logger.info("✅ All tests passed!")
                 sys.exit(0)
+
         else:
             # Original single-city bot functionality (Bratislava)
             bot = BratislavaWeatherBot()
 
-        if args.mode == "current":
-            success = bot.post_current_weather()
-            sys.exit(0 if success else 1)
+            if args.mode == "current":
+                success = bot.post_current_weather()
+                sys.exit(0 if success else 1)
 
-        elif args.mode == "forecast":
-            success = bot.post_forecast(args.hours)
-            sys.exit(0 if success else 1)
+            elif args.mode == "forecast":
+                success = bot.post_forecast(args.hours)
+                sys.exit(0 if success else 1)
 
-        elif args.mode == "alerts":
-            success = bot.post_weather_alerts()
-            sys.exit(0 if success else 1)
+            elif args.mode == "alerts":
+                success = bot.post_weather_alerts()
+                sys.exit(0 if success else 1)
 
-        elif args.mode == "daily":
-            success = bot.post_daily_summary()
-            sys.exit(0 if success else 1)
+            elif args.mode == "daily":
+                success = bot.post_daily_summary()
+                sys.exit(0 if success else 1)
 
-        elif args.mode == "schedule":
-            bot.run_scheduled_tasks()
+            elif args.mode == "schedule":
+                bot.run_scheduled_tasks()
 
-        elif args.mode == "test":
-            logger.info("Testing bot functionality...")
-
-            # Test weather service
-            weather = bot.weather_service.get_current_weather()
-            if weather:
-                logger.info("✅ Weather service working")
             else:
-                logger.error("❌ Weather service failed")
+                logger.error("Unknown mode: %s", args.mode)
                 sys.exit(1)
-
-            # Test Twitter service (get account info, don't post)
-            account_info = bot.twitter_service.get_account_info()
-            if account_info:
-                logger.info(
-                    "✅ Twitter service working - @%s", account_info["username"]
-                )
-            else:
-                logger.error("❌ Twitter service failed")
-                sys.exit(1)
-
-            logger.info("✅ All tests passed!")
-            sys.exit(0)
 
     except KeyboardInterrupt:
         logger.info("Bot stopped by user")
