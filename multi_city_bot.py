@@ -26,13 +26,18 @@ class MultiCityWeatherBot:
     def post_current_weather_all_cities(self):
         """Post current weather update for all cities"""
         try:
-            logger.info("=== Starting multi-city weather update for %d cities ===", len(self.cities))
+            logger.info(
+                "=== Starting multi-city weather update for %d cities ===",
+                len(self.cities),
+            )
 
             for i, city in enumerate(self.cities, 1):
                 city_name = city["name"]
                 weather_service = self.weather_services[city_name]
 
-                logger.info("[%d/%d] Processing weather for %s", i, len(self.cities), city_name)
+                logger.info(
+                    "[%d/%d] Processing weather for %s", i, len(self.cities), city_name
+                )
 
                 # Get current weather
                 current_weather = weather_service.get_current_weather()
@@ -54,16 +59,22 @@ class MultiCityWeatherBot:
                 if tweet_id:
                     logger.info(
                         "✅ [%d/%d] Successfully posted weather update for %s (Tweet ID: %s)",
-                        i, len(self.cities), city_name, tweet_id,
+                        i,
+                        len(self.cities),
+                        city_name,
+                        tweet_id,
                     )
                 else:
                     logger.warning(
                         "⚠️ [%d/%d] Skipped posting weather update for %s (rate limited or failed)",
-                        i, len(self.cities), city_name,
+                        i,
+                        len(self.cities),
+                        city_name,
                     )
 
                 # Small delay between city posts to avoid rate limiting
                 import time
+
                 if i < len(self.cities):  # Don't sleep after the last city
                     logger.info("⏱️ Waiting 5 seconds before next city...")
                     time.sleep(5)

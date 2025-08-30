@@ -13,9 +13,10 @@ TWITTER_BEARER_TOKEN = os.getenv("TWITTER_BEARER_TOKEN")
 # OpenWeatherMap API Configuration
 OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
 OPENWEATHER_BASE_URL = "https://api.openweathermap.org/data/2.5"
-OPENWEATHER_ONECALL_URL = "https://api.openweathermap.org/data/3.0/onecall"
+# Note: OneCall 3.0 requires paid subscription, using 2.5 endpoints instead
+OPENWEATHER_FORECAST_URL = "https://api.openweathermap.org/data/2.5/forecast"
 
-# Multi-City Configuration  
+# Multi-City Configuration
 # Order: Nairobi → Kisumu → Bratislava
 CITIES = [
     {

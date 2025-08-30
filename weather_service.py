@@ -15,7 +15,7 @@ class WeatherService:
         """
         self.api_key = config.OPENWEATHER_API_KEY
         self.base_url = config.OPENWEATHER_BASE_URL
-        self.onecall_url = config.OPENWEATHER_ONECALL_URL
+        self.forecast_url = config.OPENWEATHER_FORECAST_URL
 
         if city_config:
             self.lat = city_config["latitude"]
@@ -55,15 +55,14 @@ class WeatherService:
             return None
 
     def get_weather_forecast(self, hours=24):
-        """Get weather forecast using One Call API 3.0"""
+        """Get weather forecast using free tier forecast API"""
         try:
-            url = f"{self.onecall_url}"
+            url = f"{self.forecast_url}"
             params = {
                 "lat": self.lat,
                 "lon": self.lon,
                 "appid": self.api_key,
                 "units": "metric",
-                "exclude": "minutely,daily",
                 "lang": "en",
             }
 
@@ -79,34 +78,9 @@ class WeatherService:
             return None
 
     def get_weather_alerts(self):
-        """Get weather alerts/warnings"""
-        try:
-            url = f"{self.onecall_url}"
-            params = {
-                "lat": self.lat,
-                "lon": self.lon,
-                "appid": self.api_key,
-                "units": "metric",
-            }
-
-            response = requests.get(url, params=params, timeout=10)
-            response.raise_for_status()
-
-            data = response.json()
-            alerts = data.get("alerts", [])
-
-            if alerts:
-                logger.info(
-                    "Found %d weather alerts for %s", len(alerts), self.city_name
-                )
-                return self._parse_alerts(alerts)
-            else:
-                logger.info("No weather alerts for %s", self.city_name)
-                return []
-
-        except requests.exceptions.RequestException as e:
-            logger.error("Error fetching weather alerts: %s", e)
-            return []
+        """Get weather alerts - not available on free tier, return empty list"""
+        logger.info("Weather alerts not available on free tier for %s", self.city_name)
+        return []
 
     def _parse_current_weather(self, data):
         """Parse current weather data"""
@@ -133,28 +107,40 @@ class WeatherService:
         }
 
     def _parse_forecast(self, data, hours):
-        """Parse forecast data"""
+        """Parse forecast data from 2.5 API"""
         timezone = pytz.timezone(self.timezone)
         forecasts = []
 
-        for hour_data in data.get("hourly", [])[:hours]:
-            forecast_time = datetime.fromtimestamp(hour_data["dt"], timezone)
+        # 2.5 forecast API returns data in 3-hour intervals
+        forecast_list = data.get("list", [])
+        
+        # Calculate how many 3-hour intervals we need for the requested hours
+        intervals_needed = min(len(forecast_list), (hours // 3) + 1)
+
+        for forecast_data in forecast_list[:intervals_needed]:
+            forecast_time = datetime.fromtimestamp(forecast_data["dt"], timezone)
+            
+            # Extract rain data safely
+            rain_mm = 0
+            if "rain" in forecast_data:
+                rain_mm += forecast_data["rain"].get("3h", 0)
+            
+            # Extract snow data safely  
+            if "snow" in forecast_data:
+                rain_mm += forecast_data["snow"].get("3h", 0)
+            
             forecasts.append(
                 {
                     "timestamp": forecast_time,
-                    "temperature": round(hour_data["temp"], 1),
-                    "feels_like": round(hour_data["feels_like"], 1),
-                    "humidity": hour_data["humidity"],
-                    "description": hour_data["weather"][0]["description"].title(),
-                    "main": hour_data["weather"][0]["main"],
+                    "temperature": round(forecast_data["main"]["temp"], 1),
+                    "feels_like": round(forecast_data["main"]["feels_like"], 1),
+                    "humidity": forecast_data["main"]["humidity"],
+                    "description": forecast_data["weather"][0]["description"].title(),
+                    "main": forecast_data["weather"][0]["main"],
                     "wind_speed": round(
-                        hour_data.get("wind_speed", 0) * 3.6, 1
+                        forecast_data.get("wind", {}).get("speed", 0) * 3.6, 1
                     ),  # Convert m/s to km/h
-                    "precipitation": round(
-                        hour_data.get("rain", {}).get("1h", 0)
-                        + hour_data.get("snow", {}).get("1h", 0),
-                        1,
-                    ),
+                    "precipitation": round(rain_mm, 1),
                 }
             )
 
