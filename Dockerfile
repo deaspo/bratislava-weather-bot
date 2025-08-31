@@ -57,5 +57,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
 # Default command - just keep container running, cron handles the scheduling
-#CMD ["tail", "-f", "/dev/null"]
-CMD ["python3", "main.py", "--mode", "multi-city"]
+CMD ["tail", "-f", "/dev/null"]
