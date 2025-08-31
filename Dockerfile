@@ -31,7 +31,7 @@ COPY . .
 RUN mkdir -p logs
 
 # Make scripts executable
-RUN chmod +x main.py deploy.sh setup_cron.sh status.sh healthcheck.py
+RUN chmod +x main.py deploy.sh setup_cron.sh status.sh healthcheck.py python_scheduler.py
 
 # Create cron job file (this will be overridden by entrypoint script)
 RUN echo "0 * * * * cd /app && python3 main.py --mode multi-city >> logs/cron.log 2>&1" > /etc/cron.d/weather-bot

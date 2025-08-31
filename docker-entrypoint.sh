@@ -41,15 +41,28 @@ fi
 echo "🕐 Starting cron daemon..."
 service cron start
 
+# Alternative cron startup method if service fails
+if ! pgrep cron > /dev/null; then
+    echo "⚠️ Service cron didn't work, trying direct startup..."
+    /usr/sbin/cron -f &
+    sleep 2
+fi
+
 # Verify cron is running
 echo "🔍 Verifying cron daemon status..."
-service cron status || {
-    echo "❌ Cron daemon failed to start, trying alternative method..."
-    # Try starting cron directly
-    /usr/sbin/cron
+if pgrep cron > /dev/null; then
+    echo "✅ Cron daemon is running (PID: $(pgrep cron))"
+else
+    echo "❌ Cron daemon not running, trying one more time..."
+    /usr/sbin/cron &
     sleep 2
-    ps aux | grep cron | grep -v grep || echo "❌ Cron still not running"
-}
+    if pgrep cron > /dev/null; then
+        echo "✅ Cron daemon started (PID: $(pgrep cron))"
+    else
+        echo "❌ Failed to start cron daemon"
+        exit 1
+    fi
+fi
 
 # Clear any existing cron jobs to avoid conflicts
 echo "🧹 Clearing any existing cron jobs..."
@@ -129,13 +142,12 @@ echo "      tail -f logs/multi_city_cron.log  (weather updates every hour)"
 echo "🏥 Starting health check server..."
 python3 healthcheck.py &
 
-# Keep container alive and let cron run
-echo "🚀 Starting main bot process..."
-echo "🕐 Container will stay alive, cron daemon running in background..."
+# Use Python scheduler instead of cron (more reliable in Docker)
+echo "🚀 Starting Python-based scheduler..."
+echo "� This replaces cron with a more reliable Python scheduler"
+echo "🕐 Weather updates: Every hour at :00"  
+echo "💓 Test heartbeat: Every 5 minutes"
+echo "📝 Logs: scheduler.log, scheduler_test.log, multi_city_cron.log"
 
-# Run an immediate test to verify everything works
-echo "🧪 Running immediate test to verify setup..."
-python3 main.py --mode multi-city || echo "⚠️ Initial test failed, but cron will continue trying"
-
-# Keep container running - cron daemon is already started in background
-exec tail -f /dev/null
+# Run the Python scheduler (this keeps the container alive)
+exec python3 python_scheduler.py
