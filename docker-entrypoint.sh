@@ -45,11 +45,25 @@ service cron start
 echo "🧹 Clearing any existing cron jobs..."
 crontab -r 2>/dev/null || echo "No existing crontab found"
 
-# Setup single multi-city cron job for hourly updates
-echo "⚙️ Setting up hourly weather updates..."
+# Setup cron job based on requirements
+echo "⚙️ Setting up weather update schedule..."
 
-# Create single cron entry for all cities (uses multi-city mode with built-in delays)
-echo "0 * * * * cd /app && /usr/local/bin/python3 main.py --mode multi-city >> logs/multi_city_cron.log 2>&1" > /tmp/crontab
+# Current: Hourly updates at minute 0 of every hour (12:00, 1:00, 2:00, etc.)
+# echo "0 * * * * cd /app && /usr/local/bin/python3 main.py --mode multi-city >> logs/multi_city_cron.log 2>&1" > /tmp/crontab
+
+# Alternative schedules (uncomment one if you want different timing):
+
+# Every 30 minutes (twice per hour): 
+# echo "0,30 * * * * cd /app && /usr/local/bin/python3 main.py --mode multi-city >> logs/multi_city_cron.log 2>&1" > /tmp/crontab
+
+# Every 2 hours:
+echo "0 */2 * * * cd /app && /usr/local/bin/python3 main.py --mode multi-city >> logs/multi_city_cron.log 2>&1" > /tmp/crontab
+
+# Every 15 minutes (4 times per hour):
+# echo "*/15 * * * * cd /app && /usr/local/bin/python3 main.py --mode multi-city >> logs/multi_city_cron.log 2>&1" > /tmp/crontab
+
+# Custom times - every hour at minute 5 (12:05, 1:05, 2:05, etc.):
+# echo "5 * * * * cd /app && /usr/local/bin/python3 main.py --mode multi-city >> logs/multi_city_cron.log 2>&1" > /tmp/crontab
 
 # Install cron jobs
 crontab /tmp/crontab
@@ -62,10 +76,14 @@ mkdir -p logs
 echo "$(date): Multi-City Weather Bot v2.0 started - All cities enabled" >> logs/multi_city_cron.log
 echo "$(date): Cron job should execute: /usr/local/bin/python3 main.py --mode multi-city" >> logs/multi_city_cron.log
 
-echo "✅ Hourly updates scheduled:"
-echo "   - Multi-city mode: All cities (Bratislava, Nairobi, Kisumu) at minute 0"
-echo "   - Built-in 5-second delays between cities to avoid rate limits"
-echo "   - Logs: Check logs/multi_city_cron.log for cron job output"
+echo "✅ Weather update schedule configured:"
+echo "   📅 Current setting: Hourly at minute 0 (12:00, 1:00, 2:00, etc.)"
+echo "   🌍 Multi-city mode: All cities (Nairobi → Kisumu → Bratislava)"
+echo "   ⏱️  Built-in 5-second delays between cities to avoid rate limits"
+echo "   📝 Logs: Check logs/multi_city_cron.log for cron job output"
+echo ""
+echo "   💡 To change schedule frequency, edit docker-entrypoint.sh cron setup"
+echo "   💡 Available options: */15 (every 15min), */30 (every 30min), 0 */2 (every 2hrs)"
 
 # Start health check server in background
 echo "🏥 Starting health check server..."
