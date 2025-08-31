@@ -81,5 +81,6 @@ echo "      tail -f logs/scheduler.log           (main scheduler activity)"
 echo "      tail -f logs/scheduler_test.log      (heartbeat every 5 minutes)"  
 echo "      tail -f logs/multi_city_cron.log     (weather updates every hour)"
 
-# Run the Python scheduler (this keeps the container alive)
-exec python3 python_scheduler.py
+# Run the Python scheduler, ensuring it's the main process
+echo "🚀 Starting Python-based scheduler as the main container process..."
+exec python3 -u python_scheduler.py
