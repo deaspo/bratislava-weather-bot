@@ -177,7 +177,7 @@ curl https://your-app.yourdomain.com/health
 - Verify API keys are valid
 
 #### 3. Health Check Fails
-- Check if port 4200 is accessible
+- Check if port 8080 is accessible
 - Verify health check endpoint responds
 - Review application logs
 

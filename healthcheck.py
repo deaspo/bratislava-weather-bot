@@ -173,7 +173,7 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
         pass
 
 
-def run_health_server(port=4200):
+def run_health_server(port=8080):
     """Run the health check server"""
     server = HTTPServer(("0.0.0.0", port), HealthCheckHandler)
     logger.info("Health check server starting on port %d", port)
@@ -187,7 +187,7 @@ def run_health_server(port=4200):
 
 if __name__ == "__main__":
     # Run health server in a separate thread if this is the main process
-    port = int(os.environ.get("PORT", 4200))
+    port = int(os.environ.get("PORT", 8080))
 
     # Start health server in background
     health_thread = threading.Thread(

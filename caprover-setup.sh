@@ -122,7 +122,7 @@ cat > caprover_config.json <<EOF
   "notExposeAsWebApp": false,
   "forceSsl": true,
   "websocketSupport": false,
-  "containerHttpPort": 4200,
+  "containerHttpPort": 8080,
   "description": "Automated weather bot for Bratislava, Slovakia",
   "instanceCount": 1,
   "preDeployScript": "",

@@ -160,7 +160,7 @@ git push origin devel  # Triggers automatic deployment
 
 **Health Check Fails:**
 - Check container is running in Caprover
-- Verify port 4200 is accessible
+- Verify port 8080 is accessible
 - Test health endpoint manually
 
 **Cron Jobs Not Working:**

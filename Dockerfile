@@ -47,11 +47,11 @@ COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
 # Expose port for health checks
-EXPOSE 4200
+EXPOSE 8080
 
 # Health check for container orchestration
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:4200/health || exit 1
+    CMD curl -f http://localhost:8080/health || exit 1
 
 # Set the entrypoint
 ENTRYPOINT ["/docker-entrypoint.sh"]
