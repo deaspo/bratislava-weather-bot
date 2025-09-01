@@ -26,32 +26,31 @@ def run_weather_update():
     try:
         logger.info("🌍 Starting scheduled multi-city weather update...")
 
-        # Run the main bot command
-        result = subprocess.run(
-            ["python3", "main.py", "--mode", "multi-city"],
-            capture_output=True,
-            text=True,
-            cwd="/app",
-        )
+        # Open log file to stream output directly, preventing deadlocks
+        with open("logs/multi_city_cron.log", "a", encoding="utf-8") as f:
+            f.write(f"\n--- {datetime.now()} ---\n")
 
-        if result.returncode == 0:
+            # Use Popen to run the command and redirect stdout/stderr directly to the log file.
+            # This is a more robust method that avoids pipe buffer deadlocks.
+            # The '-u' flag ensures the child process's output is unbuffered.
+            process = subprocess.Popen(
+                ["python3", "-u", "main.py", "--mode", "multi-city"],
+                stdout=f,
+                stderr=subprocess.STDOUT,
+                text=True,
+                cwd="/app",
+            )
+
+            # Wait for the process to complete and get the return code
+            return_code = process.wait()
+
+        if return_code == 0:
             logger.info("✅ Multi-city weather update completed successfully")
         else:
-            logger.error(
-                f"❌ Weather update failed with return code {result.returncode}"
-            )
-            logger.error(f"Error output: {result.stderr}")
+            logger.error("❌ Weather update failed with return code %s", return_code)
 
-        # Log the output
-        with open("logs/multi_city_cron.log", "a") as f:
-            f.write(f"\n--- {datetime.now()} ---\n")
-            f.write(result.stdout)
-            if result.stderr:
-                f.write(f"ERRORS:\n{result.stderr}")
-            f.write("\n")
-
-    except Exception as e:
-        logger.error(f"❌ Exception during weather update: {e}")
+    except Exception:
+        logger.exception("❌ Exception during weather update")
 
 
 def test_heartbeat():
