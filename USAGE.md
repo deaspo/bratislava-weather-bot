@@ -1,4 +1,4 @@
-# Multi-City Weather Bot - Comprehensive Usage Guide
+# Multi-City Weather Bot - Comprehensive Usage Guideline
 
 ## 🌍 Overview
 The Multi-City Weather Bot supports automated weather updates for three cities:
