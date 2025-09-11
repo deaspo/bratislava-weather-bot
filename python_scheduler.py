@@ -75,8 +75,8 @@ def main():
     # Create logs directory if it doesn't exist
     os.makedirs("logs", exist_ok=True)
 
-    # Schedule the weather updates every hour at minute 0
-    schedule.every().hour.at(":00").do(run_weather_update)
+    # Schedule the weather updates every 2 hours at minute 0
+    schedule.every(2).hours.at(":00").do(run_weather_update)
 
     # Schedule test heartbeat every 5 minutes for debugging
     schedule.every(5).minutes.do(test_heartbeat)
