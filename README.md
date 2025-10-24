@@ -1,6 +1,6 @@
 # Multi-City Weather Bot 🌤️🇸🇰🇰🇪
 
-Automated Twitter bot that posts hourly weather updates for multiple cities:
+Automated Twitter bot that posts every 2 hours weather updates for multiple cities:
 - **Bratislava, Slovakia** 🇸🇰
 - **Nairobi, Kenya** 🇰🇪  
 - **Kisumu, Kenya** 🇰🇪
