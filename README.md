@@ -37,6 +37,7 @@ Uses OpenWeatherMap API with automated deployment via Caprover and staggered hou
 - **Scalable**: Easy horizontal scaling and resource management
 - **Persistent Logging**: Comprehensive logging with log rotation
 
+
 ## 📁 Project Structure
 
 ```
